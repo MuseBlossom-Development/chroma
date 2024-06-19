@@ -2,6 +2,24 @@
   <a href="https://trychroma.com"><img src="https://user-images.githubusercontent.com/891664/227103090-6624bf7d-9524-4e05-9d2c-c28d5d451481.png" alt="Chroma logo"></a>
 </p>
 
+# chromadb - Museblossom version 
+
+    오디오 파일을 읽어 MFCC 변환후 DTW similarity 계산으로 유사 음원 query 기능이 추가된 버전
+
+### 동작 순서
+1. 음원 경로 입력
+2. embedding_function에서 mfcc 변환 
+3. 추가된 dtw distance_function 거리 계산 
+4. 유사도 score 순으로 결과 반환
+
+
+### 수정된 파일
+> * /chromadb/segment/impl/vector/brute_force_index.py
+> * /chromadb/utils/embedding_functions.py
+> * /chromadb/utils/distance_functions.py
+
+---
+
 <p align="center">
     <b>Chroma - the open-source embedding database</b>. <br />
     The fastest way to build Python or JavaScript LLM apps with memory!
