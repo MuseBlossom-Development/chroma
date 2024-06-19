@@ -4,6 +4,7 @@ grpcio-tools
 httpx
 hypothesis>=6.103.1
 hypothesis[numpy]>=6.103.1
+librosa
 mypy-protobuf
 pre-commit
 pytest
@@ -11,3 +12,4 @@ pytest-asyncio
 pytest-xdist
 setuptools_scm
 types-protobuf
+tslearn>=0.6.3

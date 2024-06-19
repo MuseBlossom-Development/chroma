@@ -3,6 +3,7 @@ These functions match what the spec of hnswlib is.
 """
 import numpy as np
 from numpy.typing import ArrayLike
+from tslearn import metrics
 
 
 def l2(x: ArrayLike, y: ArrayLike) -> float:
@@ -20,3 +21,10 @@ def cosine(x: ArrayLike, y: ArrayLike) -> float:
 
 def ip(x: ArrayLike, y: ArrayLike) -> float:
     return 1 - np.dot(x, y)
+
+
+# Custom Audio DTW function
+def dtw(x: ArrayLike, y: ArrayLike) -> float:
+    path, cost = metrics.dtw_path(s1=x,
+                                  s2=y)
+    return cost

@@ -29,6 +29,10 @@ import inspect
 import json
 import sys
 import base64
+import librosa
+import math
+from typing import Callable
+
 
 try:
     from chromadb.is_thin_client import is_thin_client
@@ -50,6 +54,48 @@ def _verify_sha256(fname: str, expected_sha256: str) -> bool:
             sha256_hash.update(byte_block)
 
     return sha256_hash.hexdigest() == expected_sha256
+
+
+class MFCCEmbeddingFunction(EmbeddingFunction[Documents]):
+    # librosa.feature.mfcc audio vetorizing
+    
+    def __init__(
+        self,
+        model_name: str = "librosa-mfcc",
+        audio_length_function: Callable = lambda x: 2**math.floor(math.log2(len(x))),
+        n_mel_filter: int = 20,
+        n_mfcc: int = 12,
+        low_freq: int = 200,
+        high_freq: int = 6400
+    ):
+        self._method = model_name
+        self.get_length = audio_length_function
+        self.n_filter = n_mel_filter
+        self.n_mfcc = n_mfcc
+        self.low_freq = low_freq
+        self.high_freq = high_freq
+
+    def fft_mag(self, signal):
+        return np.abs(np.fft.fft(signal))
+
+    def __call__(self, input: Documents) -> Embeddings:
+        embeddings = []
+        for audio_file_path in input:
+            audio_data, sample_rate = librosa.load(audio_file_path)
+            target_length = int(self.get_length(audio_data))
+            audio_data = audio_data[:target_length]
+            magnitude = self.fft_mag(signal=audio_data)
+            mfcc = librosa.feature.mfcc(y=audio_data,
+                                        sr=sample_rate,
+                                        n_mfcc=self.n_mfcc,
+                                        hop_length=len(magnitude),
+                                        n_fft=len(magnitude),
+                                        lifter=self.n_filter,
+                                        fmin=self.low_freq,
+                                        fmax=self.high_freq)
+            embeddings.append(mfcc.flatten().tolist())
+            
+        return embeddings
 
 
 class SentenceTransformerEmbeddingFunction(EmbeddingFunction[Documents]):
